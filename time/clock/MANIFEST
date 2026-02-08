@@ -1,5 +1,4 @@
 $schema: "https://xperiens.waldiez.io/schema/v1/manifest"
-
 # ┌─────────────────────────────────────────────────────────────┐
 # │ IMMUTABLE SECTION                                           │
 # │ Do not modify. Changes require version bump.                │
@@ -7,17 +6,15 @@ $schema: "https://xperiens.waldiez.io/schema/v1/manifest"
 identity:
   wid: "wdz://xperiens.waldiez.io/time/clock/v1"
   type: "process"
-  created: "2026-02-07T13:46:23Z"  # MUST match .tic
-
+  created: "2026-02-07T13:46:23Z" # MUST match .tic
 # ┌─────────────────────────────────────────────────────────────┐
 # │ STABLE SECTION                                              │
-# │ Rarely changes. Requires human review and approval.        │
+# │ Rarely changes. Requires human review and approval.         │
 # └─────────────────────────────────────────────────────────────┘
 description:
   name: "UTC Day Clock"
   purpose: "Record the passage of UTC days via version control"
   tags: ["time", "reference", "heartbeat"]
-
 interface:
   operations:
     - name: "heartbeat"
@@ -28,17 +25,15 @@ interface:
       description: "Record current UTC day if new"
       params: {}
       returns: {type: bool, description: "true if new day recorded"}
-      
   state_schema:
     last_heartbeat: {type: datetime, format: "ISO-8601", mutable: true}
     heartbeat_count: {type: integer, mutable: true}
     last_tick: {type: date, format: "YYYY-MM-DD", mutable: true}
     total_ticks: {type: integer, mutable: true}
-
 # ┌─────────────────────────────────────────────────────────────┐
 # │ MUTABLE SECTION                                             │
-# │ Automation may modify. DO NOT EDIT MANUALLY.               │
-# │ This section will be added by automation on first run.     │
+# │ Automation may modify. DO NOT EDIT MANUALLY.                │
+# │ This section will be added by automation on first run.      │
 # └─────────────────────────────────────────────────────────────┘
 # state:
 #   last_heartbeat: "..."
@@ -54,9 +49,8 @@ interface:
 execution:
   runtime: "wdz://runtimes/bash"
   trigger: "wdz://triggers/heartbeat"
-
 lifecycle:
   health_check:
     type: "heartbeat"
-    interval_max: "PT23H59M"  # ISO 8601 duration: 23 hours 59 minutes
+    interval_max: "PT23H59M" # ISO 8601 duration: 23 hours 59 minutes
     action: "wdz://health/heartbeat-monitor"

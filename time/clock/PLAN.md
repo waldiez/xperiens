@@ -2,7 +2,7 @@
 
 ## Lifecycle Stages
 
-### Stage 1: Genesis ✓
+### Stage 1: Initial commit (Genesis) ✓
 
 **Status:** Complete  
 **Date:** 2026-02-07T13:46:23Z
