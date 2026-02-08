@@ -33,8 +33,8 @@
 
 **Deliverables:**
 
-- Updater script (`scripts/agents/time_clock_updater.sh`)
-- README updater (`scripts/agents/update_readme.sh`)
+- Updater script (`scripts/agents/time/clock/time_clock_updater.sh`)
+- README updater (`scripts/agents/time/clock/update_readme.sh`)
 - Validation scripts
 - Complete test suite (100% coverage)
 
