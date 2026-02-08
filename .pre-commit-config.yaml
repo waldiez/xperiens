@@ -1,0 +1,39 @@
+---
+fail_fast: false
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+        args:
+          - --unsafe
+      - id: check-toml
+      - id: end-of-file-fixer
+        exclude: '(\.svg$|\.md$|\.snap$|\.diff$|\.waldiez$)'
+      - id: trailing-whitespace
+        exclude: '(\.svg$|\.md$|\.snap$|\.diff$|\.waldiez$)'
+
+  - repo: local
+    hooks:
+      - id: lint
+        name: lint
+        entry: bash
+        language: system
+        pass_filenames: false
+        require_serial: true
+        always_run: true
+        types: [bash]
+        args:
+          - "scripts/lint.sh"
+
+      - id: test
+        name: test
+        entry: bash
+        language: system
+        pass_filenames: false
+        require_serial: true
+        always_run: true
+        types: [bash]
+        args:
+          - "tests/pre-commit"

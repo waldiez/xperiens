@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Pre-commit hook for Waldiez
+# Ensures all code is tested before commit
+
+set -euo pipefail
+
+echo "Running pre-commit checks..."
+
+# Check if tests directory exists
+if [[ ! -d "tests" ]]; then
+  echo "✗ Tests directory not found"
+  exit 1
+fi
+
+# Run all tests
+echo "Running tests..."
+if ! ./tests/run_all_tests.sh; then
+  echo ""
+  echo "✗ Tests failed. Commit aborted."
+  echo "  Fix failing tests and try again."
+  exit 1
+fi
+
+# Check coverage
+echo ""
+echo "Checking coverage..."
+if ! ./tests/coverage_report.sh; then
+  echo ""
+  echo "✗ Coverage below 100%. Commit aborted."
+  echo "  Add tests for all modified scripts."
+  exit 1
+fi
+
+echo ""
+echo "✓ All checks passed. Can proceed with commit."

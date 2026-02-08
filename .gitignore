@@ -1,0 +1,102 @@
+# Waldiez Xperiens - Git Ignore Rules
+# Strategy: Comprehensive blacklist for autonomous operation
+#
+# ============================================================================
+# CRITICAL: Private/Local Files (NEVER COMMIT)
+# ============================================================================
+.local/
+*.private
+*.secret
+#
+# ============================================================================
+# System Files
+# ============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+#
+# ============================================================================
+# Editor/IDE Files
+# ============================================================================
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-*
+.project
+.settings/
+#
+# ============================================================================
+# Temporary Files (Manual Testing)
+# ============================================================================
+*.bak
+*.tmp
+*.temp
+*.log
+*.cache
+*_backup
+*.orig
+#
+# ============================================================================
+# Assistants - Each with own workspace
+# ============================================================================
+GEMINI.md
+.codex/
+.claude/
+.gemini/
+# in addition / if preferred over .local
+.me/
+#
+# ============================================================================
+# Test Artifacts (Should be cleaned automatically)
+# ============================================================================
+# Note: ./tests/post_test_cleanup.sh removes these after tests
+# If you see these uncommitted, run the cleanup script
+#
+# Python artifacts
+.pytest_cache/
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+*.pyc
+*.pyo
+.coverage
+coverage
+htmlcov/
+#
+# Test artifacts  
+test_*.log
+*.test.log
+#
+# ============================================================================
+# CI/Build Artifacts
+# ============================================================================
+node_modules/
+# dist/ we might want to host the dist files (CDN)
+build/
+*.egg-info/
+#
+# ============================================================================
+# IMPORTANT: Intentionally Tracked Files
+# ============================================================================
+# These files ARE tracked when created by CI or humans:
+# - time/*/.toc                    (created by CI on first heartbeat)
+# - time/*/.toc.archive.*          (created during timeline rotation)
+# - time/*/MANIFEST                (state section added by CI)
+# 
+# If you manually test and create .toc, run:
+#   ./tests/post_test_cleanup.sh
+
+# ============================================================================
+# Safety Rules
+# ============================================================================
+# 1. .local/ contains session notes - NEVER commit
+# 2. Pre-commit hook blocks untested code
+# 3. Post-test cleanup removes artifacts automatically
+# 4. CI-created files (.toc, MANIFEST state) are intentionally tracked
+# 5. When in doubt: git status --ignored

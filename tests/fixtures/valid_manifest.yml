@@ -1,0 +1,31 @@
+---
+$schema: "https://xperiens.waldiez.io/schema/v1/manifest"
+
+identity:
+  wid: "wdz://xperiens.waldiez.io/test/fixture/v1"
+  type: "test"
+  created: "2026-02-07T10:00:00Z"
+
+description:
+  name: "Test Fixture Waldiez"
+  purpose: "For testing purposes only"
+  tags: ["test", "fixture"]
+
+interface:
+  operations:
+    - name: "test_operation"
+      params: {}
+      returns: {type: bool}
+
+  state_schema:
+    last_heartbeat: {type: datetime, format: "ISO-8601", mutable: true}
+    heartbeat_count: {type: integer, mutable: true}
+    last_tick: {type: date, format: "YYYY-MM-DD", mutable: true}
+    total_ticks: {type: integer, mutable: true}
+
+execution:
+  runtime: "wdz://runtimes/bash"
+
+lifecycle:
+  health_check:
+    type: "test"
