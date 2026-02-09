@@ -605,6 +605,24 @@ waldiez/xperiens/
 - Integration with existing ontology tools (Protégé, reasoners)?
 - Performance implications of semantic reasoning?
 
+### 7.7 Distributed Storage
+
+- IPFS integration for permanent availability?
+- Hybrid: registry + IPFS + HTTP?
+- IPNS for mutable references?
+- Add Optional field in MANIFEST?
+
+  ```yaml
+    discovery:
+    ipfs: "QmABC..." # Optional
+  ```
+
+### 7.8 Browser Integration
+
+- Protocol handlers for wdz:// links?
+- Browser extension for inspection?
+- Security model?
+
 ---
 
 ## 8. Version History
