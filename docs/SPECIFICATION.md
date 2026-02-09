@@ -2,7 +2,7 @@
 
 **Version:** 0.1-alpha  
 **Status:** Living specification  
-**Last updated:** 2026-02-07
+**Last updated:** 2026-02-08
 
 ---
 
@@ -49,6 +49,7 @@ Waldiez exist at multiple scales:
 - **Atomic**: Individual methods, functions, data transformations
 - **Component**: Devices, services, workflows, processes
 - **Composite**: Systems, orchestrations, groups of waldiez
+- **Semantic**: Ontologies, vocabularies, formal models
 
 An **agent** is the formal specification of a waldiez, expressed as:
 
@@ -200,7 +201,7 @@ The **MANIFEST** is the core specification file that defines the waldiez agent.
 
 Format: **YAML** (recommended) or **TOML**
 
-#### Required Structure
+### 3.3.1 Required Structure
 
 ```yaml
 # ===== SCHEMA & IDENTITY (Immutable) =====
@@ -248,7 +249,7 @@ lifecycle:
   part_of: ["wdz://...", ...]            # Parent/container waldiez
 ```
 
-#### Section Ownership
+### 3.3.2 Section Ownership
 
 | Section | Mutability | Who Can Modify |
 | ------- | ---------- | -------------- |
@@ -261,6 +262,185 @@ lifecycle:
 | `lifecycle` | Occasional changes | Humans only |
 
 **Critical Rule:** Automation (CI, scripts, bots) **MUST ONLY** modify the `state` section and **MUST** respect the `state_schema` constraints.
+
+---
+
+### 3.3.3 Semantic Layer (Optional)
+
+Waldiez MAY include semantic annotations to link with formal ontologies and enable richer discovery, composition, and reasoning.
+
+**Design principle:** Semantic annotations are **completely optional**. Waldiez work perfectly without ontologies. Add semantic enrichment only when it provides value.
+
+#### Ontology Reference
+
+Link to external ontology:
+
+```yaml
+ontology:
+  ref: "https://w3id.org/saref/core"
+  concepts:
+    - "saref:HVAC"
+    - "saref:TemperatureSensor"
+  properties:
+    - "saref:hasTemperature"
+    - "saref:hasSetPoint"
+```
+
+#### Ontology Embedding
+
+Include ontology directly:
+
+```yaml
+ontology:
+  format: "turtle"  # or "rdf-xml", "json-ld"
+  content: |
+    @prefix sh: <https://example.org/smart-home#> .
+    @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    
+    sh:SmartThermostat rdf:type rdfs:Class ;
+        rdfs:label "Smart Thermostat" .
+  
+  # Or reference file in .waldiez archive
+  file: "./smart-home.ttl"
+```
+
+#### Semantic Annotations
+
+Annotate waldiez properties with semantic meaning:
+
+```yaml
+semantics:
+  # Link to standard vocabulary
+  vocabulary: "http://schema.org/"
+  
+  # Unit ontology links (e.g., QUDT)
+  units:
+    temperature: "http://qudt.org/vocab/unit/DEG_C"
+    setpoint: "http://qudt.org/vocab/unit/DEG_C"
+  
+  # RDF triples about this waldiez
+  rdf: |
+    @prefix : <#> .
+    @prefix qudt: <http://qudt.org/schema/qudt/> .
+    
+    : a :SmartDevice ;
+        qudt:hasUnit qudt:DEG_C .
+```
+
+#### Complete Example
+
+```yaml
+$schema: "https://xperiens.waldiez.io/schema/v1/manifest"
+
+identity:
+  wid: "wdz://devices/thermostat-01"
+  type: "device"
+  created: "2026-02-08T10:00:00Z"
+
+description:
+  name: "Living Room Thermostat"
+  purpose: "Control temperature in living room"
+
+# Standard waldiez interface
+interface:
+  operations:
+    - name: "getTemperature"
+      returns: {type: float, unit: celsius}
+    - name: "setTemperature"
+      params:
+        target: {type: float, unit: celsius}
+
+# OPTIONAL: Semantic enrichment
+ontology:
+  ref: "https://w3id.org/saref/core"
+  concepts: ["saref:HVAC", "saref:TemperatureSensor"]
+
+semantics:
+  units:
+    temperature: "http://qudt.org/vocab/unit/DEG_C"
+  vocabulary: "https://w3id.org/saref/"
+```
+
+#### Ontology as Waldiez Type
+
+Ontologies themselves can be waldiez:
+
+```yaml
+$schema: "https://xperiens.waldiez.io/schema/v1/manifest"
+
+identity:
+  wid: "wdz://ontologies/smart-home/v1"
+  type: "ontology"
+  created: "2026-02-08T10:00:00Z"
+
+description:
+  name: "Smart Home Ontology"
+  purpose: "Formal description of smart home devices and concepts"
+  tags: ["ontology", "smart-home", "iot"]
+
+ontology:
+  format: "turtle"
+  file: "./smart-home.ttl"
+  base_uri: "https://example.org/smart-home#"
+
+lifecycle:
+  depends_on:
+    - "wdz://ontologies/saref/v1"  # Built on SAREF
+```
+
+#### Rules and Conventions
+
+**Optional Nature:**
+
+- Semantic annotations are OPTIONAL
+- Waldiez work without ontologies
+- Add semantics only when valuable
+- Not all waldiez need semantic enrichment
+
+**Ontology Formats:**
+
+- Supported: Turtle (.ttl), RDF/XML (.rdf), JSON-LD (.jsonld)
+- Turtle is RECOMMENDED for human readability
+
+**References:**
+
+- Ontology URIs SHOULD be dereferenceable
+- Use standard ontologies when possible:
+  - SAREF: Smart home/IoT (<https://w3id.org/saref/>)
+  - QUDT: Units and quantities (<http://qudt.org/>)
+  - Schema.org: General vocabulary
+  - FOAF: People and organizations
+  - PROV-O: Provenance
+
+**Tooling:**
+
+- Tools MAY use ontologies for reasoning
+- Tools MAY validate semantic consistency
+- Tools MUST work with waldiez that lack ontologies
+
+#### Use Cases
+
+**IoT Devices:**
+Link devices to standard ontologies like SAREF for interoperability.
+
+**Scientific Methods:**
+Annotate with QUDT units for automatic unit validation and conversion.
+
+**Domain Models:**
+Distribute ontologies as waldiez for versioning and composition.
+
+**Discovery:**
+Find waldiez by semantic concepts rather than just names.
+
+**Reasoning:**
+Infer relationships between waldiez based on ontological reasoning.
+
+#### Future Work
+
+- SPARQL query interface for semantic discovery
+- Ontology reasoning integration
+- Standard vocabulary library
+- Semantic composition patterns
 
 ---
 
@@ -417,6 +597,14 @@ waldiez/xperiens/
 - How to verify an agent accurately represents its waldiez?
 - Runtime contracts and monitors?
 
+### 7.6 Semantic Integration
+
+- How to discover waldiez by semantic concepts?
+- Should there be a standard semantic registry?
+- Ontology versioning and migration strategies?
+- Integration with existing ontology tools (Protégé, reasoners)?
+- Performance implications of semantic reasoning?
+
 ---
 
 ## 8. Version History
@@ -424,6 +612,7 @@ waldiez/xperiens/
 | Version | Date | Changes |
 | ------- | ---- | ------- |
 | 0.1-alpha | 2026-02-07 | Initial specification: core concepts, MANIFEST structure, time/clock example |
+| 0.1-alpha-ontology | 2026-02-08 | Add optional semantic layer with ontology support (Section 3.3.3) |
 
 ---
 
@@ -465,6 +654,14 @@ $schema: "https://xperiens.waldiez.io/schema/v1/manifest"
 **.wid:** Lightweight agent format (single YAML file)  
 **.tic:** Immutable creation timestamp  
 **.toc:** Timeline/heartbeat log  
+**Ontology:** Formal description of concepts and relationships in a domain  
+**Semantic Layer:** Optional ontology annotations that enrich waldiez with formal semantics  
+**RDF:** Resource Description Framework, W3C standard for semantic data  
+**Turtle:** Text-based RDF serialization format (.ttl files)  
+**SAREF:** Smart Appliances REFerence ontology (<https://w3id.org/saref/>)  
+**QUDT:** Quantities, Units, Dimensions, and Types ontology (<http://qudt.org/>)  
+**OWL:** Web Ontology Language for formal ontologies  
+**SPARQL:** Query language for RDF data
 
 ---
 That's it
