@@ -27,10 +27,10 @@ echo ""
 
 for manifest in $CHANGED_MANIFESTS; do
   echo "Checking $manifest..."
-  
+
   # Get diff
   DIFF=$(git diff HEAD~1 HEAD "$manifest" 2>/dev/null || true)
-  
+
   # Check if identity section was modified (WID or created timestamp)
   if echo "$DIFF" | grep -E '^\+.*wid:|^\+.*created:' >/dev/null 2>&1; then
     echo "❌ ERROR: Immutable identity fields modified in $manifest"
@@ -42,7 +42,7 @@ for manifest in $CHANGED_MANIFESTS; do
     echo "version bump in the WID."
     exit 1
   fi
-  
+
   # If not a bot commit, check if state section was modified
   if [[ "$AUTHOR" != "waldiez-bot" ]]; then
     # Compare state sections structurally (avoid fragile diff parsing)

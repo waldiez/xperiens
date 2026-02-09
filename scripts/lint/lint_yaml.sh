@@ -69,7 +69,7 @@ WARNINGS=0
 # Lint each file
 while IFS= read -r yamlfile; do
     echo "Checking: $yamlfile"
-    
+
     # Run yamllint
     if OUTPUT=$(yamllint -f parsable "$yamlfile" 2>&1); then
         echo "  ✓ No issues"

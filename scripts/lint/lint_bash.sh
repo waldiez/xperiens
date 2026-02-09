@@ -42,7 +42,7 @@ WARNINGS=0
 # Lint each script
 while IFS= read -r script; do
     echo "Checking: $script"
-    
+
     # Run shellcheck
     # Exclude SC2086 (double quote to prevent globbing) - sometimes we want word splitting
     # Exclude SC1091 (not following sourced files) - handled separately

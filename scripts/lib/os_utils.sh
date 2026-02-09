@@ -26,13 +26,13 @@ detect_linux_distro() {
     echo "not-linux"
     return
   fi
-  
+
   # Check for Alpine
   if command -v apk &>/dev/null; then
     echo "alpine"
     return
   fi
-  
+
   # Check for various distros
   if [[ -f /etc/os-release ]]; then
     local distro_id
@@ -87,7 +87,7 @@ install_package() {
   local package="$1"
   local use_sudo=false
   local quiet=false
-  
+
   # Parse flags
   shift
   while [[ $# -gt 0 ]]; do
@@ -97,12 +97,12 @@ install_package() {
       *) shift ;;
     esac
   done
-  
+
   local pm
   pm=$(detect_package_manager)
-  
+
   local install_cmd=""
-  
+
   case "$pm" in
     brew)
       install_cmd="brew install $package"
@@ -147,7 +147,7 @@ install_package() {
       return 1
       ;;
   esac
-  
+
   # Execute installation
   if [[ "$quiet" == "true" ]]; then
     eval "$install_cmd" >/dev/null 2>&1
@@ -163,7 +163,7 @@ pip_install() {
   local package="$1"
   local use_user=false
   local quiet=false
-  
+
   # Parse flags
   shift
   while [[ $# -gt 0 ]]; do
@@ -189,12 +189,12 @@ pip_install() {
     echo "ERROR: pip not found" >&2
     return 1
   fi
-  
+
   # Build install command
   local install_args="install"
   [[ "$use_user" == "true" ]] && install_args="$install_args --user"
   [[ "$quiet" == "true" ]] && install_args="$install_args --quiet"
-  
+
   # shellcheck disable=SC2086
   $pip_cmd $install_args "$package"
 }
@@ -206,7 +206,7 @@ npm_install() {
   local package="$1"
   local use_global=false
   local quiet=false
-  
+
   # Parse flags
   shift
   while [[ $# -gt 0 ]]; do
@@ -216,17 +216,17 @@ npm_install() {
       *) shift ;;
     esac
   done
-  
+
   if ! command_exists npm; then
     echo "ERROR: npm not found" >&2
     return 1
   fi
-  
+
   # Build install command
   local install_args=""
   [[ "$use_global" == "true" ]] && install_args="-g"
   [[ "$quiet" == "true" ]] && install_args="$install_args --silent"
-  
+
   # shellcheck disable=SC2086
   npm install $install_args "$package"
 }

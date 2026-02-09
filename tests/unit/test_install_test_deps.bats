@@ -36,10 +36,10 @@ teardown() {
     echo "Bats 1.10.0"
   }
   export -f bats
-  
+
   # Run with bats mocked
   run bash tests/install_test_deps.sh
-  
+
   # Should detect it's already installed (may still exit 1 if yq missing)
   echo "$output" | grep -q "already installed"
 }
@@ -53,9 +53,9 @@ teardown() {
 
 @test "install_test_deps: reports installation summary" {
   skip "Requires mocking all install functions"
-  
+
   run bash tests/install_test_deps.sh
-  
+
   echo "$output" | grep -q "Installation Summary"
   echo "$output" | grep -q "Successfully installed:"
   echo "$output" | grep -q "Failed/Skipped:"

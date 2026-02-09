@@ -94,7 +94,7 @@ if [[ -x .git/hooks/pre-commit ]]; then
 else
   echo "⚠️  Pre-commit hook not installed (optional but recommended)"
   echo "   Run (in repo root): "
-  echo "   cd ./.git/hooks && ln -s ../../tests/pre-commit . 2>/dev/null || true && cd ../../ && chmod +x ./.git/hooks/pre-commit" 
+  echo "   cd ./.git/hooks && ln -s ../../tests/pre-commit . 2>/dev/null || true && cd ../../ && chmod +x ./.git/hooks/pre-commit"
 fi
 
 echo ""

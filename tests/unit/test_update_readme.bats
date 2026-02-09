@@ -6,16 +6,16 @@ load ../helpers/test_helper
 setup() {
   TEST_DIR=$(mktemp -d)
   export TEST_REPO="$TEST_DIR"
-  
+
   mkdir -p "$TEST_REPO/time/clock"
   create_test_tic "$TEST_REPO/time/clock"
   create_test_manifest "$TEST_REPO/time/clock"
-  
+
   cat > "$TEST_REPO/README.md" <<'EOF2'
 # Waldiez Xperiens
 
-**Days since first commit:** 0  
-**Last heartbeat:** Not yet initialized  
+**Days since first commit:** 0
+**Last heartbeat:** Not yet initialized
 **Status:** 🔵 Awaiting first commit
 
 [→ START HERE](START_HERE.md).
@@ -24,7 +24,7 @@ setup() {
 
 *This README is automatically maintained. See `time/clock/MANIFEST` for details.*
 EOF2
-  
+
   cd "$TEST_REPO" || return 1
 }
 
@@ -63,10 +63,10 @@ teardown() {
     \"total_ticks\": 1,
     \"last_updated\": \"$LAST_HEARTBEAT\"
   }" "time/clock/MANIFEST"
-  
+
   run bash "$OLDPWD/scripts/agents/time/clock/update_readme.sh"
   [ "$status" -eq 0 ]
-  
+
   assert_file_contains "README.md" "**Days since first commit:** 1"
   assert_file_contains "README.md" "$LAST_HEARTBEAT"
   assert_file_contains "README.md" "🟢 Alive"
@@ -78,16 +78,16 @@ teardown() {
 2026-02-06
 2026-02-07
 EOF2
-  
+
   yq eval -i '.state = {
     "last_heartbeat": "2026-02-07T10:30:15Z",
     "heartbeat_count": 1,
     "last_tick": "2026-02-07",
     "total_ticks": 3
   }' "time/clock/MANIFEST"
-  
+
   bash "$OLDPWD/scripts/agents/time/clock/update_readme.sh"
-  
+
   assert_file_contains "README.md" "**Days since first commit:** 3"
 }
 
@@ -103,9 +103,9 @@ EOF2
     "last_tick": "2026-02-07",
     "total_ticks": 1
   }' "time/clock/MANIFEST"
-  
+
   bash "$OLDPWD/scripts/agents/time/clock/update_readme.sh"
-  
+
   assert_file_contains "README.md" "# Waldiez Xperiens"
   assert_file_contains "README.md" "Days since first commit:"
   assert_file_contains "README.md" "Last heartbeat:"
@@ -122,9 +122,9 @@ EOF2
     "last_tick": "2026-02-07",
     "total_ticks": 1
   }' "time/clock/MANIFEST"
-  
+
   run bash "$OLDPWD/scripts/agents/time/clock/update_readme.sh"
-  
+
   [[ "$output" =~ "README updater" ]]
   # shellcheck disable=SC2076
   [[ "$output" =~ "README.md updated" ]]

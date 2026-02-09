@@ -30,10 +30,10 @@ teardown() {
     echo "version: 0.9.0"
   }
   export -f shellcheck
-  
+
   # Run with shellcheck mocked
   run bash scripts/lint/install_lint_deps.sh
-  
+
   # Should detect it's already installed (may still exit 1 if others missing)
   echo "$output" | grep -q "already installed"
 }
@@ -41,9 +41,9 @@ teardown() {
 @test "install_lint_deps: reports installation summary" {
   # Script should output summary regardless of success
   skip "Requires mocking all install functions"
-  
+
   run bash scripts/lint/install_lint_deps.sh
-  
+
   echo "$output" | grep -q "Installation Summary"
   echo "$output" | grep -q "Successfully installed:"
   echo "$output" | grep -q "Failed/Skipped:"

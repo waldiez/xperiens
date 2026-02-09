@@ -91,7 +91,7 @@ LINTERS_PASSED=0
 # Run bash linter
 if [[ "$RUN_BASH" == true ]]; then
     LINTERS_RUN=$((LINTERS_RUN + 1))
-    
+
     if bash "$SCRIPT_DIR/lint/lint_bash.sh"; then
         LINTERS_PASSED=$((LINTERS_PASSED + 1))
     else
@@ -103,7 +103,7 @@ fi
 # Run YAML linter
 if [[ "$RUN_YAML" == true ]]; then
     LINTERS_RUN=$((LINTERS_RUN + 1))
-    
+
     if bash "$SCRIPT_DIR/lint/lint_yaml.sh"; then
         LINTERS_PASSED=$((LINTERS_PASSED + 1))
     else
@@ -115,7 +115,7 @@ fi
 # Run markdown linter
 if [[ "$RUN_MARKDOWN" == true ]]; then
     LINTERS_RUN=$((LINTERS_RUN + 1))
-    
+
     if bash "$SCRIPT_DIR/lint/lint_markdown.sh"; then
         LINTERS_PASSED=$((LINTERS_PASSED + 1))
     else

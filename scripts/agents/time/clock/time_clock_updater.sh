@@ -46,7 +46,7 @@ NEEDS_TICK=false
 if [[ "$CURRENT_DATE" > "$LAST_TICK" ]]; then
   NEEDS_TICK=true
   echo "New day detected! Will backfill from $LAST_TICK to $CURRENT_DATE"
-  
+
   # Backfill any missed dates (inclusive)
   NEXT_DATE=$(next_day "$LAST_TICK")
   until [[ "$NEXT_DATE" > "$CURRENT_DATE" ]]; do
@@ -68,7 +68,7 @@ if yq eval '.state' MANIFEST &>/dev/null && [[ "$(yq eval '.state' MANIFEST)" !=
   CURRENT_HEARTBEAT_COUNT=$(yq eval '.state.heartbeat_count // 0' MANIFEST)
   NEW_HEARTBEAT_COUNT=$((CURRENT_HEARTBEAT_COUNT + 1))
   echo "Updating existing state (heartbeat #$NEW_HEARTBEAT_COUNT)"
-  
+
   yq eval -i "
     .state.last_heartbeat = \"$CURRENT_TIMESTAMP\" |
     .state.heartbeat_count = $NEW_HEARTBEAT_COUNT |
@@ -79,7 +79,7 @@ if yq eval '.state' MANIFEST &>/dev/null && [[ "$(yq eval '.state' MANIFEST)" !=
 else
   # First run - create state section
   echo "Creating state section (first heartbeat)"
-  
+
   yq eval -i "
     .state = {} |
     .state.last_heartbeat = \"$CURRENT_TIMESTAMP\" |

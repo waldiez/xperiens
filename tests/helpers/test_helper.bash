@@ -64,7 +64,7 @@ create_test_toc() {
   local target_dir="${1:-$TEST_WALDIEZ}"
   shift
   local dates=("$@")
-  
+
   for date in "${dates[@]}"; do
     echo "$date" >> "$target_dir/.toc"
   done
@@ -149,12 +149,12 @@ assert_yaml_field() {
   local filepath="$1"
   local field="$2"
   local expected="${3:-}"
-  
+
   if ! yq eval "$field" "$filepath" &>/dev/null; then
     echo "Expected YAML field to exist: $field"
     return 1
   fi
-  
+
   if [[ -n "$expected" ]]; then
     local actual
     actual=$(yq eval "$field" "$filepath")

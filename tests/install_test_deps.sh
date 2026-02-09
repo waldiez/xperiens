@@ -41,7 +41,7 @@ else
   BATS_PACKAGE="bats"
   [[ "$PM" == "apt" ]] && BATS_PACKAGE="bats"
   [[ "$PM" == "brew" ]] && BATS_PACKAGE="bats-core"
-  
+
   if install_package "$BATS_PACKAGE" $USE_SUDO; then
     echo "✓ bats installed"
     INSTALLED=$((INSTALLED + 1))
@@ -73,9 +73,9 @@ else
     echo "Installing yq via binary download..."
     YQ_VERSION="v4.35.1"
     YQ_BINARY="yq_linux_amd64"
-    
+
     [[ "$OS" == "macos" ]] && YQ_BINARY="yq_darwin_amd64"
-    
+
     if curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}" -o /tmp/yq; then
       chmod +x /tmp/yq
       if [[ "$(is_root)" == "true" ]]; then

@@ -49,9 +49,9 @@ if yq eval '.state.last_heartbeat' "$CLOCK_DIR/MANIFEST" &>/dev/null; then
     NOW_EPOCH=$(date +%s)
     # shellcheck disable=SC2004
     HOURS_SINCE=$(( ($NOW_EPOCH - $LAST_EPOCH) / 3600 ))
-    
+
     echo "Last heartbeat: $LAST_HEARTBEAT ($HOURS_SINCE hours ago)"
-    
+
     # Determine status emoji
     if (( HOURS_SINCE < 24 )); then
       STATUS="🟢 Alive"
@@ -77,8 +77,8 @@ echo "Status: $STATUS"
 cat > "$README" <<EOF
 # Waldiez Xperiens
 
-**Days since first commit:** $DAYS  
-**Last heartbeat:** $LAST_HEARTBEAT  
+**Days since first commit:** $DAYS
+**Last heartbeat:** $LAST_HEARTBEAT
 **Status:** $STATUS
 
 [→ START HERE](START_HERE.md).

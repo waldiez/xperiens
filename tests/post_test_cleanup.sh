@@ -18,11 +18,11 @@ fi
 # Check if MANIFEST has state section (from testing)
 if yq eval '.state' time/clock/MANIFEST &>/dev/null && [[ "$(yq eval '.state' time/clock/MANIFEST)" != "null" ]]; then
   echo "Removing state section from MANIFEST..."
-  
+
   # Remove state section (keep everything else)
   yq eval 'del(.state)' time/clock/MANIFEST > time/clock/MANIFEST.tmp
   mv time/clock/MANIFEST.tmp time/clock/MANIFEST
-  
+
   echo "✓ State section removed"
 fi
 

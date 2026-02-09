@@ -11,7 +11,7 @@ setup() {
   git config user.name "Test User"
   git config user.email "test@example.com"
   git config advice.defaultBranchName false
-  
+
   mkdir -p waldiez
   cat > waldiez/MANIFEST <<'EOF'
 $schema: "https://xperiens.waldiez.io/schema/v1/manifest"
@@ -29,7 +29,7 @@ state:
   last_heartbeat: "2026-02-07T10:00:00Z"
   heartbeat_count: 1
 EOF
-  
+
   git add waldiez/MANIFEST
   git commit -q -m "initial: Add MANIFEST"
 }
@@ -45,7 +45,7 @@ teardown() {
   echo "content" > README.md
   git add README.md
   git commit -q -m "Add README"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [ "$status" -eq 0 ]
   [[ "$output" =~ "No MANIFEST files modified" ]]
@@ -56,7 +56,7 @@ teardown() {
   rm -f waldiez/MANIFEST.bak
   git add waldiez/MANIFEST
   git commit -q -m "Update description"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [ "$status" -eq 0 ]
 }
@@ -66,7 +66,7 @@ teardown() {
   rm -f waldiez/MANIFEST.bak
   git add waldiez/MANIFEST
   git commit -q -m "Change WID"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [ "$status" -eq 1 ]
   [[ "$output" =~ "ERROR: Immutable identity fields modified" ]]
@@ -77,7 +77,7 @@ teardown() {
   rm -f waldiez/MANIFEST.bak
   git add waldiez/MANIFEST
   git commit -q -m "Change created timestamp"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [ "$status" -eq 1 ]
   [[ "$output" =~ "ERROR: Immutable identity fields modified" ]]
@@ -89,7 +89,7 @@ teardown() {
   rm -f waldiez/MANIFEST.bak
   git add waldiez/MANIFEST
   git commit -q -m "Modify state"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [ "$status" -eq 0 ]
   # Warning or passes silently (current implementation warns)
@@ -101,7 +101,7 @@ teardown() {
   git add waldiez/MANIFEST
   git config user.name "waldiez-bot"
   git commit -q -m "Update state"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [ "$status" -eq 0 ]
   [[ "$output" =~ "valid" ]]
@@ -112,7 +112,7 @@ teardown() {
   rm -f waldiez/MANIFEST.bak
   git add waldiez/MANIFEST
   git commit -q -m "Change WID"
-  
+
   run bash "$OLDPWD/scripts/validation/check_manifest_sections.sh"
   [[ "$output" =~ "immutable" ]]
   [[ "$output" =~ "version bump" ]]

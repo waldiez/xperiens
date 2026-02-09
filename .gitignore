@@ -69,7 +69,7 @@ __pycache__/
 coverage
 htmlcov/
 #
-# Test artifacts  
+# Test artifacts
 test_*.log
 *.test.log
 #
@@ -88,7 +88,7 @@ build/
 # - time/*/.toc                    (created by CI on first heartbeat)
 # - time/*/.toc.archive.*          (created during timeline rotation)
 # - time/*/MANIFEST                (state section added by CI)
-# 
+#
 # If you manually test and create .toc, run:
 #   ./tests/post_test_cleanup.sh
 
