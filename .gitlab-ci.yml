@@ -1,0 +1,25 @@
+# GitLab CI Configuration for Waldiez Xperiens
+# Modular structure using includes
+
+stages:
+  - secret-detection
+  - validate
+  - test
+  - heartbeat
+  - update
+
+sast:
+  stage: test
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - local: .gitlab/ci/base.yml
+  - local: .gitlab/ci/validate.yml
+  - local: .gitlab/ci/heartbeat.yml
+  - local: .gitlab/ci/update.yml
+
+variables:
+  SECRET_DETECTION_ENABLED: 'true'
+secret_detection:
+  stage: secret-detection

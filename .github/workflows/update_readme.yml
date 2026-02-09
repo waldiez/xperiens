@@ -1,0 +1,59 @@
+name: Update README
+
+on:
+  # Run after time/clock updates
+  workflow_run:
+    workflows: ["time/clock health monitor"]
+    types:
+      - completed
+
+  # Manual trigger
+  workflow_dispatch:
+
+  # On push to clock files (for testing)
+  push:
+    paths:
+      - 'time/clock/.toc'
+      - 'time/clock/MANIFEST'
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+
+    permissions:
+      contents: write  # Explicitly allow pushing commits
+
+    steps:
+      - uses: actions/checkout@6
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Install bats
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Update README
+        run: |
+          bash scripts/agents/time/clock/update_readme.sh
+
+      - name: Commit changes
+        run: |
+          git config user.name "waldiez-bot"
+          git config user.email "bot@waldiez.io"
+
+          if [[ -n $(git status -s README.md) ]]; then
+            git add README.md
+            git commit --no-verify -m "chore: Update README.md with current status"
+            git push
+          else
+            echo "No changes to README.md"
+          fi

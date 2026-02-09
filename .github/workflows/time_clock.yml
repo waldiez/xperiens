@@ -1,0 +1,119 @@
+name: time/clock health monitor
+
+on:
+  schedule:
+    # Check every hour
+    - cron: '0 * * * *'
+
+  workflow_dispatch:
+
+  push:
+    paths:
+      - 'time/clock/**'
+      - 'scripts/agents/time/clock/**'
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Explicitly allow pushing commits
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Install faketime
+        run: sudo apt update && sudo apt install -y libfaketime
+
+      - name: Install bats
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Check if heartbeat needed
+        id: check
+        run: |
+          MANIFEST="time/clock/MANIFEST"
+
+          # Check if MANIFEST has state section
+          if ! yq eval '.state.last_heartbeat' "$MANIFEST" > /dev/null 2>&1; then
+            echo "No heartbeat yet, triggering first heartbeat"
+            echo "needs_heartbeat=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          LAST_HEARTBEAT=$(yq eval '.state.last_heartbeat' "$MANIFEST")
+          if [ "${LAST_HEARTBEAT}" = "null" ]; then
+            echo "No heartbeat yet, triggering first heartbeat"
+            echo "needs_heartbeat=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          date_to_epoch() {
+            local date_str="$1"
+            date_str="$(echo "$date_str" | tr -d '\r')"
+
+            if date --version &>/dev/null 2>&1; then
+              # GNU date: force UTC interpretation/output
+              date -u -d "$date_str" +%s
+            elif is_busybox_date; then
+              # BusyBox date (Alpine)
+              date -u -d "$date_str" +%s
+            else
+              # macOS/BSD: handle both formats explicitly
+              if [[ "$date_str" == ????-??-?? ]]; then
+                date -u -j -f "%Y-%m-%d" "$date_str" +%s
+              else
+                date -u -j -f "%Y-%m-%dT%H:%M:%SZ" "$date_str" +%s
+              fi
+            fi
+          }
+
+          LAST_EPOCH=$(date_to_epoch "$LAST_HEARTBEAT")
+          NOW_EPOCH=$(date +%s)
+          HOURS_SINCE=$(( ($NOW_EPOCH - $LAST_EPOCH) / 3600 ))
+
+          echo "Hours since last heartbeat: $HOURS_SINCE"
+
+          if (( $HOURS_SINCE >= 23 )); then
+            echo "needs_heartbeat=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs_heartbeat=false" >> $GITHUB_OUTPUT
+            echo "Clock is healthy. Next check in $(( 24 - $HOURS_SINCE )) hours."
+          fi
+
+      - name: Send heartbeat
+        if: steps.check.outputs.needs_heartbeat == 'true'
+        run: |
+          bash scripts/agents/time/clock/time_clock_updater.sh time/clock
+
+      - name: Commit heartbeat
+        if: steps.check.outputs.needs_heartbeat == 'true'
+        run: |
+          git config user.name "waldiez-bot"
+          git config user.email "bot@waldiez.io"
+
+          if [[ -n $(git status -s) ]]; then
+            CURRENT_DATE=$(date -u +%Y-%m-%d)
+            HEARTBEAT_COUNT=$(yq eval '.state.heartbeat_count' time/clock/MANIFEST)
+
+            # Check if this is a new tick or just heartbeat
+            if git diff time/clock/.toc | grep -q "^+"; then
+              git add time/clock/
+              git commit --no-verify -m "chore(time/clock): Tick $CURRENT_DATE (heartbeat #$HEARTBEAT_COUNT)"
+            else
+              TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S")
+              git add time/clock/
+              git commit --no-verify -m "chore(time/clock): Heartbeat at $TIMESTAMP UTC"
+            fi
+
+            git push
+          fi

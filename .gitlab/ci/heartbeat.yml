@@ -1,0 +1,93 @@
+# Heartbeat jobs
+
+heartbeat:time/clock:
+  extends:
+    - .base_setup
+  stage: heartbeat
+
+  before_script:
+    - !reference [.base_setup, before_script]
+    - git config --global user.name "waldiez-bot"
+    - git config --global user.email "bot@waldiez.io"
+
+  script:
+  - |
+    _MANIFEST="time/clock/MANIFEST"
+
+    # Get last heartbeat (returns empty string if null/missing)
+    LAST_HEARTBEAT=$(yq eval '.state.last_heartbeat // ""' "$_MANIFEST")
+    echo "Last heartbeat value: '$LAST_HEARTBEAT'"
+
+    # Check if heartbeat needed
+    if [ -z "$LAST_HEARTBEAT" ]; then
+      echo "No heartbeat yet, triggering first heartbeat"
+      NEEDS_HEARTBEAT=true
+    else
+      echo "LAST_HEARTBEAT: $LAST_HEARTBEAT"
+
+      # Try to parse the date (with error handling)
+      if LAST_EPOCH=$(date -d "$LAST_HEARTBEAT" +%s 2>/dev/null); then
+        echo "LAST_EPOCH=$LAST_EPOCH"
+        NOW_EPOCH=$(date +%s)
+        echo "NOW_EPOCH=$NOW_EPOCH"
+        HOURS_SINCE=$(( (NOW_EPOCH - LAST_EPOCH) / 3600 ))
+        echo "Hours since last heartbeat: $HOURS_SINCE"
+
+        if (( HOURS_SINCE >= 23 )); then
+          echo "Heartbeat needed (>= 23 hours)"
+          NEEDS_HEARTBEAT=true
+        else
+          NEEDS_HEARTBEAT=false
+          echo "Clock is healthy. Next check in $(( 24 - HOURS_SINCE )) hours."
+        fi
+      else
+        echo "Invalid date format in MANIFEST, triggering heartbeat"
+        NEEDS_HEARTBEAT=true
+      fi
+    fi
+
+    if [ "$NEEDS_HEARTBEAT" = "true" ]; then
+      echo "Executing heartbeat..."
+
+      # Run updater
+      bash scripts/agents/time/clock/time_clock_updater.sh time/clock
+
+      # Check for changes
+      if [[ -n $(git status -s time/clock/) ]]; then
+        echo "Changes detected in time/clock/, preparing commit."
+        git add time/clock/
+
+        # Check if this is a tick (new day) or just heartbeat
+        if git diff --staged time/clock/.toc | grep -q "^+"; then
+          CURRENT_DATE=$(date -u +%Y-%m-%d)
+          HEARTBEAT_COUNT=$(yq eval '.state.heartbeat_count // 0' time/clock/MANIFEST)
+          git commit --no-verify -m "chore(time/clock): Tick $CURRENT_DATE (heartbeat #$HEARTBEAT_COUNT)"
+        else
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S")
+          git commit --no-verify -m "chore(time/clock): Heartbeat at $TIMESTAMP UTC"
+        fi
+        PORT=""
+        if [[ "$CI_SERVER_PORT" != "80" && "$CI_SERVER_PORT" != "443" ]]; then
+          PORT=":$CI_SERVER_PORT"
+        fi
+        # Push changes
+        git push ${CI_SERVER_PROTOCOL}://oauth2:${CI_PUSH_TOKEN}@${CI_SERVER_HOST}${PORT}/${CI_PROJECT_PATH}.git HEAD:${CI_COMMIT_REF_NAME}
+
+        echo "✓ Heartbeat completed and pushed"
+      else
+        echo "No changes to commit"
+      fi
+    else
+      echo "Heartbeat not needed yet"
+    fi
+
+  rules:
+    # Run on schedule (configure in GitLab: CI/CD > Schedules > hourly)
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    # Allow manual trigger
+    - if: $CI_PIPELINE_SOURCE == "web"
+    # Run on push to time/clock files (for testing)
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - time/clock/**
+        - scripts/agents/time/clock/time_clock_updater.sh

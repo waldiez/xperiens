@@ -1,0 +1,15 @@
+# Validation jobs
+
+validate:waldiez:
+  extends: .base_setup
+  stage: validate
+
+  script:
+    # Check .tic immutability
+    - bash scripts/validation/check_tic_immutable.sh
+    # Check MANIFEST sections
+    - bash scripts/validation/check_manifest_sections.sh
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"

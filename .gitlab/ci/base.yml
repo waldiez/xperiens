@@ -1,0 +1,19 @@
+# Base configuration: stages, variables, common setup
+
+variables:
+  GIT_STRATEGY: clone
+  GIT_DEPTH: 0
+
+# Hidden job for common setup (YAML anchor)
+.base_setup:
+  image: ubuntu:latest
+  before_script:
+    - apt update && apt install -y bash git wget bats libfaketime
+    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+    - chmod +x /usr/local/bin/yq
+
+# Hidden job for bot git config
+.git_bot_config:
+  before_script:
+    - git config --global user.name "waldiez-bot"
+    - git config --global user.email "bot@waldiez.io"

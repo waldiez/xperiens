@@ -1,0 +1,34 @@
+name: Validate Waldiez Integrity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-immutability:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@6.0.2
+        with:
+          fetch-depth: 2  # Need previous commit for comparison
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Install bats
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Check .tic immutability
+        run: |
+          bash scripts/validation/check_tic_immutable.sh
+
+      - name: Check MANIFEST integrity
+        run: |
+          bash scripts/validation/check_manifest_sections.sh

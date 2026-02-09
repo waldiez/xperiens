@@ -1,0 +1,81 @@
+name: 🎭 Waldiez Proposal
+description: Propose a new waldiez
+title: "[Waldiez]: "
+labels: ["waldiez", "proposal"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposing a new waldiez? Awesome! Let's define it.
+
+  - type: input
+    id: wid
+    attributes:
+      label: Waldiez ID (WID)
+      description: Proposed WID for this waldiez
+      placeholder: "wdz://xperiens.waldiez.io/devices/thermostat/v1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - process
+        - method
+        - device
+        - workflow
+        - presentation
+        - ontology
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: What does this waldiez do?
+      placeholder: "Record temperature and control HVAC system"
+    validations:
+      required: true
+
+  - type: textarea
+    id: interface
+    attributes:
+      label: Interface
+      description: Operations and state schema
+      render: yaml
+      placeholder: |
+        operations:
+          - name: getTemperature
+            returns: {type: float, unit: celsius}
+        state_schema:
+          current_temp: {type: float, mutable: true}
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What does this waldiez depend on?
+      placeholder: "wdz://runtimes/python3.11"
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Why should this waldiez exist?
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Notes
+      description: Any technical details about implementation
+    validations:
+      required: false
