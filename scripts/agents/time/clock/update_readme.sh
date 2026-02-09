@@ -77,8 +77,8 @@ echo "Status: $STATUS"
 cat > "$README" <<EOF
 # Waldiez Xperiens
 
-**Days since first commit:** $DAYS
-**Last heartbeat:** $LAST_HEARTBEAT
+**Days since first commit:** $DAYS  
+**Last heartbeat:** $LAST_HEARTBEAT  
 **Status:** $STATUS
 
 [→ START HERE](START_HERE.md).

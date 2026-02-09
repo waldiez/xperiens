@@ -12,7 +12,7 @@ repos:
       - id: end-of-file-fixer
         exclude: '(\.svg$|\.md$|\.snap$|\.diff$|\.waldiez$)'
       - id: trailing-whitespace
-        exclude: '(\.svg$|\.md$|\.snap$|\.diff$|\.waldiez$)'
+        exclude: '(\.svg$|\.md$|\.snap$|\.diff$|\.waldiez$|update_readme.sh$)'
 
   - repo: local
     hooks:
