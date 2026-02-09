@@ -54,3 +54,9 @@ lifecycle:
     type: "heartbeat"
     interval_max: "PT23H59M" # ISO 8601 duration: 23 hours 59 minutes
     action: "wdz://health/heartbeat-monitor"
+state:
+  last_heartbeat: "2026-02-09T23:04:45Z"
+  heartbeat_count: 1
+  last_tick: "2026-02-09"
+  total_ticks: 3
+  last_updated: "2026-02-09T23:04:45Z"
