@@ -110,7 +110,7 @@ git push origin main
    - Click "Add variable"
 
 3. **Create Pipeline Schedule (for hourly heartbeat)**
-   - Go to: CI/CD > Schedules
+   - Go to: Build -> Pipeline Schedules (or: CI/CD > Schedules)
    - Click "New schedule"
    - Description: `Hourly heartbeat check`
    - Interval pattern: Custom (`0 * * * *`) - every hour
