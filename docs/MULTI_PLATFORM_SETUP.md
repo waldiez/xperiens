@@ -16,6 +16,8 @@ This guide helps you set up the repository to push to **both GitHub and GitLab**
 gh repo create waldiez/xperiens --public
 
 # Or manually at: https://github.com/organizations/waldiez/repositories/new
+# and follow the instructions
+# Don't use a template or include any files like README or .gitignore
 ```
 
 **GitLab:**
@@ -24,7 +26,9 @@ gh repo create waldiez/xperiens --public
 # Using GitLab CLI (if installed)
 glab repo create waldiez/xperiens --public
 
-# Or manually at: https://gitlab.com/projects/new
+# Or manually at: https://gitlab.com/projects/new  (or any other gitlab host)
+# and follow the instructions
+# Don't use a template or include any files like README or .gitignore
 ```
 
 ---
