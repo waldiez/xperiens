@@ -85,6 +85,13 @@ command_exists() {
 # Returns: 0 on success, 1 on failure
 install_package() {
   local package="$1"
+
+  # Validate package has a name
+  if [[ -z "$package" ]]; then
+    echo "ERROR: pip_install requires package name" >&2
+    return 1
+  fi
+
   local use_sudo=false
   local quiet=false
 
@@ -161,6 +168,12 @@ install_package() {
 # Returns: 0 on success, 1 on failure
 pip_install() {
   local package="$1"
+  # Validate package has a name
+  if [[ -z "$package" ]]; then
+    echo "ERROR: pip_install requires package name" >&2
+    return 1
+  fi
+
   local use_user=false
   local quiet=false
 
@@ -204,6 +217,12 @@ pip_install() {
 # Returns: 0 on success, 1 on failure
 npm_install() {
   local package="$1"
+  # Validate package has a name
+  if [[ -z "$package" ]]; then
+    echo "ERROR: npm_install requires package name" >&2
+    return 1
+  fi
+
   local use_global=false
   local quiet=false
 
