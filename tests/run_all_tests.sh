@@ -52,3 +52,5 @@ echo ""
 echo "Next steps:"
 echo "  - Check coverage: ./tests/coverage_report.sh"
 echo "  - Install pre-commit hook: ln -s ../../tests/pre-commit .git/hooks/pre-commit"
+
+git restore time/clock/ > /dev/null || true
